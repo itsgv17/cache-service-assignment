@@ -1,7 +1,7 @@
 # cache-service-assignment
 Generic cache server 
 
-Used Spring boot and Concurrent map datastructure(having two levels, also handles concurrent access by itself.) for implementation.
+Used Spring boot and Concurrent map datastructure(having two levels) for implementation.
  ```
 ConcurrentMap<String, Map<String, CacheObject>> twoLevelMap = ConcurrentHashMap<>();
 
@@ -110,6 +110,17 @@ Response response = client.newCall(request).execute();
   It runs every one minute, removes expired cache objects
   
   Implemented approach iterates entire data structure & evicts expired cached object.
+  
+ Can impove performance by maintaining SkipListDS(Singly Linked list with multiple level),ref->https://en.wikipedia.org/wiki/Skip_list
+ 
+ Higher level LL maintains time ranges , first and last node reference in lower level linked list which falls within that defined time range.
+ 
+ when you put elements in cache , second LL appends cache elements along with collectionKey and CacheKey in Second LL.
+ 
+ When there is a cache eviction, Scheadular first  searches the higher level linked list , finds node ranges eligible for eviction.
+ Then Hihger Level LL uses Second LL ref. to remove expired Cache objects in Constant time O(1).
+ 
+ Finally need to remove unsed nodes in Skip list too.
  
   ```
   
